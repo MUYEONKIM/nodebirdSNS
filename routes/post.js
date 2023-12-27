@@ -4,7 +4,7 @@ const path = require('path');
 const fs = require('fs');
 
 const { afterUploadImage, uploadPost } = require('../controllers/post');
-const { isLoggedIn } = require('../middlewares');
+const { verifyToken } = require('../middlewares');
 
 const router = express.Router();
 
@@ -29,10 +29,10 @@ const upload = multer({
 });
 
 // POST /post/img
-router.post('/img', isLoggedIn, upload.single('img'), afterUploadImage);
+router.post('/img', verifyToken, upload.single('img'), afterUploadImage);
 
 // POST /post
 const upload2 = multer();
-router.post('/', isLoggedIn, upload2.none(), uploadPost);
+router.post('/', verifyToken, upload2.none(), uploadPost);
 
 module.exports = router;

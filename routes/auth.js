@@ -7,7 +7,7 @@ const { join, login, logout } = require('../controllers/auth');
 const router = express.Router();
 
 // POST /auth/join
-router.post('/join', isNotLoggedIn, join); 
+router.post('/join', isNotLoggedIn, join);
 
 // POST /auth/login
 router.post('/login', isNotLoggedIn, login);
@@ -22,7 +22,7 @@ router.get('/kakao', passport.authenticate('kakao'));
 router.get('/kakao/callback', passport.authenticate('kakao', {
   failureRedirect: '/?error=카카오로그인 실패',
 }), (req, res) => {
-  res.redirect('/'); // 성공 시에는 /로 이동
+  res.redirect('http://localhost:3000'); // 성공 시에는 /로 이동
 });
 
 module.exports = router;
