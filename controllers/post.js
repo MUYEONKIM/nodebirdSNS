@@ -23,7 +23,8 @@ exports.uploadPost = async (req, res, next) => {
       );
       await post.addHashtags(result.map(r => r[0]));
     }
-    res.redirect('/');
+    // res.redirect('/');
+    res.send('qq')
   } catch (error) {
     console.error(error);
     next(error);

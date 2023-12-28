@@ -1,5 +1,5 @@
 const express = require('express');
-const { isLoggedIn, isNotLoggedIn } = require('../middlewares');
+const { verifyToken } = require('../middlewares');
 const {
   renderProfile, renderJoin, renderMain, renderHashtag,
 } = require('../controllers/page');
@@ -14,9 +14,9 @@ router.use((req, res, next) => {
   next();
 });
 
-router.get('/profile', isLoggedIn, renderProfile);
+router.get('/profile', verifyToken, renderProfile);
 
-router.get('/join', isNotLoggedIn, renderJoin);
+router.get('/join', renderJoin);
 
 router.get('/', renderMain);
 

@@ -1,19 +1,18 @@
 const express = require('express');
 const passport = require('passport');
 
-const { isLoggedIn, isNotLoggedIn } = require('../middlewares');
 const { join, login, logout } = require('../controllers/auth');
 
 const router = express.Router();
 
 // POST /auth/join
-router.post('/join', isNotLoggedIn, join);
+router.post('/join', join);
 
 // POST /auth/login
-router.post('/login', isNotLoggedIn, login);
+router.post('/login', login);
 
 // GET /auth/logout
-router.get('/logout', isLoggedIn, logout);
+router.get('/logout', logout);
 
 // GET /auth/kakao
 router.get('/kakao', passport.authenticate('kakao'));

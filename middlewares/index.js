@@ -1,6 +1,5 @@
 const jwt = require('jsonwebtoken');
 const rateLimit = require('express-rate-limit');
-const cors = require('cors');
 
 exports.isLoggedIn = (req, res, next) => {
   if (req.isAuthenticated()) {
@@ -11,7 +10,7 @@ exports.isLoggedIn = (req, res, next) => {
 };
 
 exports.isNotLoggedIn = (req, res, next) => {
-  if (!req.isAuthenticated()) {
+  if (!req.isAuthenticated()) { // 패스포트 통해서 로그인 했니?
     next();
   } else {
     const message = encodeURIComponent('로그인한 상태입니다.');
@@ -21,6 +20,7 @@ exports.isNotLoggedIn = (req, res, next) => {
 
 exports.verifyToken = (req, res, next) => { // 토큰 검사
   try {
+    console.log()
     res.locals.decoded = jwt.verify(req.headers.authorization, process.env.JWT_SECRET);
     return next();
   } catch (error) {

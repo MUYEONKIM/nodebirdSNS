@@ -1,6 +1,8 @@
 const bcrypt = require('bcrypt');
 const passport = require('passport');
 const User = require('../models/user');
+const { createToken } = require('./v2');
+const jwt = require('jsonwebtoken');
 
 exports.join = async (req, res, next) => {
   const { email, nick, password } = req.body;
@@ -31,12 +33,23 @@ exports.login = (req, res, next) => {
     if (!user) {
       return res.send(info.message)
     }
-    return req.login(user, (loginError) => {
+    return req.login(user, async (loginError) => {
       if (loginError) {
         console.error(loginError);
         return next(loginError);
       }
-      return res.send(user.nick);
+      const token = jwt.sign({
+        id: user.id,
+        nick: user.nick
+      }, process.env.JWT_SECRET, {
+        expiresIn: '30m',
+        issuer: 'nodebird',
+      })
+      return res.json({
+        code: 200,
+        message: '토큰이 발급되었습니다.',
+        token
+      });
     });
   })(req, res, next); // 미들웨어 내의 미들웨어에는 (req, res, next)를 붙입니다.
 };
