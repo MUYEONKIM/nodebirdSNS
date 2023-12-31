@@ -1,22 +1,22 @@
 const jwt = require('jsonwebtoken');
 const rateLimit = require('express-rate-limit');
 
-exports.isLoggedIn = (req, res, next) => {
-  if (req.isAuthenticated()) {
-    next();
-  } else {
-    res.status(403).send('로그인 필요');
-  }
-};
+// exports.isLoggedIn = (req, res, next) => {
+//   if (req.isAuthenticated()) {
+//     next();
+//   } else {
+//     res.status(403).send('로그인 필요');
+//   }
+// };
 
-exports.isNotLoggedIn = (req, res, next) => {
-  if (!req.isAuthenticated()) { // 패스포트 통해서 로그인 했니?
-    next();
-  } else {
-    const message = encodeURIComponent('로그인한 상태입니다.');
-    res.redirect(`/?error=${message}`);
-  }
-};
+// exports.isNotLoggedIn = (req, res, next) => {
+//   if (!req.isAuthenticated()) { // 패스포트 통해서 로그인 했니?
+//     next();
+//   } else {
+//     const message = encodeURIComponent('로그인한 상태입니다.');
+//     res.redirect(`/?error=${message}`);
+//   }
+// };
 
 exports.verifyToken = (req, res, next) => { // 토큰 검사
   try {

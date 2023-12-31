@@ -3,6 +3,7 @@ const { Post, Hashtag } = require('../models');
 exports.afterUploadImage = (req, res) => {
   console.log(req.file);
   res.json({ url: `/img/${req.file.filename}` });
+  // res.send("qqq")
 };
 
 exports.uploadPost = async (req, res, next) => {
@@ -23,8 +24,7 @@ exports.uploadPost = async (req, res, next) => {
       );
       await post.addHashtags(result.map(r => r[0]));
     }
-    // res.redirect('/');
-    res.send('qq')
+    res.redirect('/');
   } catch (error) {
     console.error(error);
     next(error);

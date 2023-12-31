@@ -21,8 +21,8 @@ const upload = multer({
       cb(null, 'uploads/');
     },
     filename(req, file, cb) {
-      const ext = path.extname(file.originalname);
-      cb(null, path.basename(file.originalname, ext) + Date.now() + ext);
+      const ext = path.extname(file.originalname).toString('utf8');
+      cb(null, path.basename(file.originalname, ext).toString('utf8') + Date.now() + ext);
     },
   }),
   limits: { fileSize: 5 * 1024 * 1024 },
@@ -30,6 +30,7 @@ const upload = multer({
 
 // POST /post/img
 router.post('/img', verifyToken, upload.single('img'), afterUploadImage);
+// router.post('/img');
 
 // POST /post
 const upload2 = multer();
