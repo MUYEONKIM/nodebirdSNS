@@ -25,7 +25,7 @@ exports.join = async (req, res, next) => {
 }
 
 exports.login = (req, res, next) => {
-  passport.authenticate('local', { session: false }, (authError, user, info) => {
+  passport.authenticate('local', (authError, user, info) => {
     if (authError) {
       console.error(authError);
       return next(authError);
@@ -45,15 +45,17 @@ exports.login = (req, res, next) => {
         expiresIn: '30m',
         issuer: 'nodebird',
       })
-      return res.json({
-        code: 200,
-        message: '토큰이 발급되었습니다.',
-        token,
-        user: {
-          userid: user.id,
-          usernick: user.nick
-        }
-      });
+      return res
+        .status(200)
+        .json({
+          code: 200,
+          message: '토큰이 발급되었습니다.',
+          token,
+          user: {
+            userid: user.id,
+            usernick: user.nick
+          }
+        });
     });
   })(req, res, next); // 미들웨어 내의 미들웨어에는 (req, res, next)를 붙입니다.
 };
