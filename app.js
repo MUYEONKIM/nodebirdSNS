@@ -16,7 +16,6 @@ const { sequelize } = require('./models');
 const passportConfig = require('./passport');
 
 const app = express();
-passportConfig();
 app.set('port', process.env.PORT || 8001);
 app.set('view engine', 'html');
 nunjucks.configure('views', {
@@ -30,6 +29,13 @@ sequelize.sync({ force: false })
   .catch((err) => {
     console.error(err);
   });
+passportConfig();
+app.use(
+  cors({
+    origin: true,
+    credentials: true,
+  }),
+);
 
 app.use(morgan('dev'));
 app.use('/img', express.static(path.join(__dirname, 'uploads')));
@@ -48,9 +54,6 @@ app.use(session({
 }));
 app.use(passport.initialize()); // req.user, req.login, .req.isAuth... 등 생김
 app.use(passport.session());
-app.use(cors({
-  credentials: true
-}))
 app.use('/', pagerouter);
 app.use('/v2', v2);
 app.use('/auth', authRouter);

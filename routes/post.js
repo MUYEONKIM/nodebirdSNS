@@ -4,7 +4,7 @@ const path = require('path');
 const fs = require('fs');
 
 const { afterUploadImage, uploadPost } = require('../controllers/post');
-const { verifyToken } = require('../middlewares');
+const { verifyToken, isLoggedIn } = require('../middlewares');
 
 const router = express.Router();
 
@@ -21,19 +21,26 @@ const upload = multer({
       cb(null, 'uploads/');
     },
     filename(req, file, cb) {
-      const ext = path.extname(file.originalname).toString('utf8');
-      cb(null, path.basename(file.originalname, ext).toString('utf8') + Date.now() + ext);
+      // cb(null, new Date().valueOf() + path.extname(file.originalname))
+      const ext = path.extname(file.originalname);
+      cb(null, path.basename(file.originalname, ext) + Date.now() + ext);
     },
   }),
   limits: { fileSize: 5 * 1024 * 1024 },
 });
 
 // POST /post/img
-router.post('/img', verifyToken, upload.single('img'), afterUploadImage);
+router.post('/img', isLoggedIn, upload.single('img'), afterUploadImage);
+// router.post('/img', verifyToken, upload.single('img'), afterUploadImage);
 // router.post('/img');
 
 // POST /post
 const upload2 = multer();
-router.post('/', verifyToken, upload2.none(), uploadPost);
+router.post('/', uploadPost);
+// router.post('/', verifyToken, upload2.none(), uploadPost);
+
+router.get('/test', verifyToken, (req, res) => {
+  res.send("qqq")
+})
 
 module.exports = router;

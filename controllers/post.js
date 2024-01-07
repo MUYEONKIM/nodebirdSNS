@@ -7,6 +7,7 @@ exports.afterUploadImage = (req, res) => {
 exports.uploadPost = async (req, res, next) => {
   try {
     const post = await Post.create({
+      title: req.body.title,
       content: req.body.content,
       img: req.body.img,
       UserId: req.user.id,

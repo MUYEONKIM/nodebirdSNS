@@ -1,13 +1,14 @@
 const jwt = require('jsonwebtoken');
 const rateLimit = require('express-rate-limit');
 
-// exports.isLoggedIn = (req, res, next) => {
-//   if (req.isAuthenticated()) {
-//     next();
-//   } else {
-//     res.status(403).send('로그인 필요');
-//   }
-// };
+exports.isLoggedIn = (req, res, next) => {
+  console.log(req.isAuthenticated());
+  if (req.isAuthenticated()) {
+    next();
+  } else {
+    res.status(403).send('로그인 필요');
+  }
+};
 
 // exports.isNotLoggedIn = (req, res, next) => {
 //   if (!req.isAuthenticated()) { // 패스포트 통해서 로그인 했니?
@@ -20,7 +21,7 @@ const rateLimit = require('express-rate-limit');
 
 exports.verifyToken = (req, res, next) => { // 토큰 검사
   try {
-    console.log()
+    // console.log(req.headers.authorization)
     res.locals.decoded = jwt.verify(req.headers.authorization, process.env.JWT_SECRET);
     return next();
   } catch (error) {

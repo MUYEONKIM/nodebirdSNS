@@ -6,26 +6,21 @@ const User = require('../models/user');
 module.exports = () => {
   passport.serializeUser((user, done) => {
     done(null, user.id);
+    console.log("성공입니다", user.id)
   });
 
   passport.deserializeUser((id, done) => {
     User.findOne({
-      where: { id },
-      include: [{
-        model: User,
-        attributes: ['id', 'nick'],
-        as: 'Followers',
-      }, {
-        model: User,
-        attributes: ['id', 'nick'],
-        as: 'Followings',
-      }],
+      where: { id }
     })
       .then(user => {
-        console.log('user', user);
+        console.log('로그인 성공');
         done(null, user);
       })
-      .catch(err => done(err));
+      .catch((err) => {
+        console.log('에러입니다', err)
+        done(err);
+      });
   });
 
   local();
