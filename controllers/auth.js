@@ -62,6 +62,6 @@ exports.login = (req, res, next) => {
 
 exports.logout = (req, res) => {
   req.logout(() => {
-    res.redirect('/');
-  });
+    res.send("로그아웃 되었습니다.").end();
+  })
 };

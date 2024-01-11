@@ -20,7 +20,20 @@ class Comment extends Sequelize.Model {
   }
 
   static associate(db) {
-    db.Comment.belongsToMany(db.Post);
+    db.Comment.belongsTo(db.Post, {
+      foreignKey: {
+        name: 'PostId',
+        allowNull: false
+      },
+      onDelete: 'CASCADE'
+    });
+    db.Comment.belongsTo(db.User, {
+      foreignKey: {
+        name: 'UserId',
+        allowNull: false
+      },
+      onDelete: 'CASCADE'
+    });
   }
 };
 
