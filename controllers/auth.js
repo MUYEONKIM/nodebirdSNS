@@ -31,7 +31,7 @@ exports.login = (req, res, next) => {
       return next(authError);
     }
     if (!user) {
-      return res.send(info.message)
+      return res.status(500).json(info.message)
     }
     return req.login(user, async (loginError) => {
       if (loginError) {
@@ -50,11 +50,7 @@ exports.login = (req, res, next) => {
         .json({
           code: 200,
           message: '토큰이 발급되었습니다.',
-          token,
-          user: {
-            userid: user.id,
-            usernick: user.nick
-          }
+          token
         });
     });
   })(req, res, next); // 미들웨어 내의 미들웨어에는 (req, res, next)를 붙입니다.

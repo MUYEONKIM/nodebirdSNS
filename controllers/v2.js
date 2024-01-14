@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
 const sequelize = require('sequelize')
-const { User, Post } = require('../models');
+const { User, Post, Comment } = require('../models');
 const Op = sequelize.Op;
 
 exports.getMyPosts = (req, res) => {
@@ -29,7 +29,7 @@ exports.getPosts = async (req, res) => {
         attributes: ['id', 'nick'],
       },
       order: [['createdAt', 'DESC']],
-      where: req.body.search ? { title: { [Op.like]: `%${req.body.search}%` } } : {},
+      where: req.query.search ? { title: { [Op.like]: `%${req.query.search}%` } } : {},
     });
     if (!posts) {
       return res.json({
@@ -40,6 +40,35 @@ exports.getPosts = async (req, res) => {
     return res.json({
       code: 200,
       payload: posts,
+    });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({
+      code: 500,
+      message: '서버 에러',
+    });
+  }
+};
+
+exports.getPost = async (req, res) => {
+  try {
+    const post = await Post.findOne({
+      // 배열에 댓글들 담겨있게 됨
+      include: {
+        model: Comment,
+        attributes: ['comment', 'UserId'],
+      },
+      where: { id: req.query.contentId },
+    });
+    if (!post) {
+      return res.json({
+        code: 200,
+        message: '검색 결과가 없습니다',
+      });
+    }
+    return res.json({
+      code: 200,
+      payload: post,
     });
   } catch (err) {
     console.error(err);
