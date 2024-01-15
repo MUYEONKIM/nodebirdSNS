@@ -23,7 +23,7 @@ exports.getMyPosts = (req, res) => {
 
 exports.getPosts = async (req, res) => {
   try {
-    const posts = await Post.findAll({
+    const boardList = await Post.findAll({
       include: {
         model: User,
         attributes: ['id', 'nick'],
@@ -31,15 +31,36 @@ exports.getPosts = async (req, res) => {
       order: [['createdAt', 'DESC']],
       where: req.query.search ? { title: { [Op.like]: `%${req.query.search}%` } } : {},
     });
-    if (!posts) {
+    if (!boardList) {
       return res.json({
         code: 200,
-        message: '검색 결과가 없습니다',
+        message: '게시글이 없습니다',
       });
+    };
+    let countPerPage = 10;
+    let pageNo = req.query.page;
+    if (!pageNo) {
+      pageNo = 1;
+    }
+    // 전체 크기
+    let totalCount = boardList.length;
+    // 시작 번호
+    let start = ((pageNo - 1) * countPerPage);
+    // 종료 번호
+    let end = (pageNo * countPerPage) - 1;
+    // 종료 번호가 전체 크기보다 크면 전체 크기로 변경
+    if (end > (totalCount - 1)) {
+      end = totalCount - 1;
+    }
+    let boardPageList = [];
+    if (start < totalCount) {
+      for (let index = start; index <= end; index++) {
+        boardPageList.push(boardList[index]);
+      }
     }
     return res.json({
       code: 200,
-      payload: posts,
+      payload: boardPageList,
     });
   } catch (err) {
     console.error(err);
@@ -58,12 +79,12 @@ exports.getPost = async (req, res) => {
         model: Comment,
         attributes: ['comment', 'UserId'],
       },
-      where: { id: req.query.contentId },
+      where: { id: req.params.contentId },
     });
     if (!post) {
       return res.json({
-        code: 200,
-        message: '검색 결과가 없습니다',
+        code: 404,
+        message: '게시글이 존재하지 않습니다.',
       });
     }
     return res.json({

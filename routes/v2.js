@@ -13,6 +13,6 @@ router.get('/posts/my', verifyToken, getMyPosts);
 router.get('/posts', getPosts);
 // router.get('/posts/:title', apiLimiter, verifyToken, getPostsBySearch);
 
-router.get('/post', getPost)
+router.get('/post/:contentId', getPost)
 
 module.exports = router;
