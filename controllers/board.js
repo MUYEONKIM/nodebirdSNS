@@ -3,24 +3,6 @@ const sequelize = require('sequelize')
 const { User, Post, Comment } = require('../models');
 const Op = sequelize.Op;
 
-exports.getMyPosts = (req, res) => {
-  Post.findAll({ where: { userId: res.locals.decoded.id } })
-    .then((posts) => {
-      console.log(posts);
-      res.json({
-        code: 200,
-        payload: posts,
-      });
-    })
-    .catch((error) => {
-      console.error(error);
-      return res.status(500).json({
-        code: 500,
-        message: '서버 에러',
-      });
-    });
-};
-
 exports.getPosts = async (req, res) => {
   try {
     const boardList = await Post.findAll({
@@ -29,7 +11,8 @@ exports.getPosts = async (req, res) => {
         attributes: ['id', 'nick'],
       },
       order: [['createdAt', 'DESC']],
-      where: req.query.search ? { title: { [Op.like]: `%${req.query.search}%` } } : {},
+      where:
+        req.query.search ? { title: { [Op.like]: `%${req.query.search}%` } } : req.params.id ? { userId: req.params.id } : {},
     });
     if (!boardList) {
       return res.json({
@@ -42,6 +25,7 @@ exports.getPosts = async (req, res) => {
     if (!pageNo) {
       pageNo = 1;
     }
+    console.log(req.query.page)
     // 전체 크기
     let totalCount = boardList.length;
     // 시작 번호
@@ -61,6 +45,7 @@ exports.getPosts = async (req, res) => {
     return res.json({
       code: 200,
       payload: boardPageList,
+      length: totalCount
     });
   } catch (err) {
     console.error(err);
@@ -77,7 +62,7 @@ exports.getPost = async (req, res) => {
       // 배열에 댓글들 담겨있게 됨
       include: {
         model: Comment,
-        attributes: ['comment', 'UserId'],
+        attributes: ['comment', 'UserId', 'id'],
       },
       where: { id: req.params.contentId },
     });
@@ -99,3 +84,43 @@ exports.getPost = async (req, res) => {
     });
   }
 };
+
+exports.updatePost = async (req, res) => {
+  try {
+    Post.update({
+      title: req.body.title,
+      content: req.body.content,
+      img: req.body.img,
+    }, {
+      where: { id: req.params.contentId }
+    });
+    return res.json({
+      code: 200,
+      message: '수정 완료'
+    })
+  } catch (error) {
+    console.error(err);
+    return res.status(500).json({
+      code: 500,
+      message: '서버 에러',
+    });
+  }
+}
+
+exports.deletePost = async (req, res) => {
+  try {
+    Post.destroy({
+      where: { id: req.params.contentId }
+    }); // force : true로 주면 softdelete여도 강제삭제 가능
+    return res.json({
+      code: 200,
+      message: '삭제 완료'
+    })
+  } catch (error) {
+    console.error(err);
+    return res.status(500).json({
+      code: 500,
+      message: '서버 에러',
+    });
+  }
+}

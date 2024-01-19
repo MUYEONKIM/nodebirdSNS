@@ -1,7 +1,7 @@
 const bcrypt = require('bcrypt');
 const passport = require('passport');
 const User = require('../models/user');
-const { createToken } = require('./v2');
+const { createToken } = require('./board');
 const jwt = require('jsonwebtoken');
 
 exports.join = async (req, res, next) => {

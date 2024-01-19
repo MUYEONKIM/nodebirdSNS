@@ -3,7 +3,7 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 
-const { afterUploadImage, uploadPost, createComment } = require('../controllers/post');
+const { afterUploadImage, uploadPost, createComment, updateComment, deleteComment } = require('../controllers/post');
 const { verifyToken, isLoggedIn } = require('../middlewares');
 
 const router = express.Router();
@@ -44,5 +44,9 @@ router.get('/test', isLoggedIn, (req, res) => {
 })
 
 router.post('/comment', isLoggedIn, createComment);
+
+router.patch('/comment/:commentId', isLoggedIn, updateComment);
+
+router.delete('/comment/:commentId', isLoggedIn, deleteComment);
 
 module.exports = router;

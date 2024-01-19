@@ -26,7 +26,7 @@ router.get('/kakao/callback', passport.authenticate('kakao', {
     message: '카카오 로그인에 성공하였습니다.',
     user: req.user
   })
-  // res.sned('http://localhost:3000'); // 성공 시에는 /로 이동
+  // res.send('http://localhost:3000'); // 성공 시에는 /로 이동
 });
 
 module.exports = router;

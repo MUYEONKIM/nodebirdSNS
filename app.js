@@ -8,7 +8,7 @@ const nunjucks = require('nunjucks');
 const dotenv = require('dotenv');
 const cors = require('cors')
 dotenv.config();
-const v2 = require('./routes/v2');
+const board = require('./routes/board');
 const pagerouter = require('./routes/page')
 const postRouter = require('./routes/post');
 const authRouter = require('./routes/auth');
@@ -56,7 +56,7 @@ app.use(session({
 app.use(passport.initialize()); // req.user, req.login, .req.isAuth... 등 생김
 app.use(passport.session());
 app.use('/', pagerouter);
-app.use('/v2', v2);
+app.use('/board', board);
 app.use('/auth', authRouter);
 app.use('/post', postRouter);
 app.use('/user', userRouter);

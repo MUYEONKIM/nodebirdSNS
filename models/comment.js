@@ -13,7 +13,7 @@ class Comment extends Sequelize.Model {
       underscored: false,
       modelName: 'Comment',
       tableName: 'comments',
-      paranoid: false,
+      paranoid: true, // 소프트 delete기능
       charset: 'utf8mb4',
       collate: 'utf8mb4_general_ci',
     });
