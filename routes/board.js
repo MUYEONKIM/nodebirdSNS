@@ -20,4 +20,5 @@ router.patch('/post/:contentId', updatePost)
 
 router.delete('/post/:contentId', deletePost)
 
+
 module.exports = router;
