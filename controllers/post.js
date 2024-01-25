@@ -1,6 +1,7 @@
 const { Post, Comment } = require('../models');
 
-exports.afterUploadImage = (req, res) => {
+exports.afterUploadImage = (req, res, next) => {
+  if (!req.file) return res.send("qwe")
   res.json({ url: `/img/${req.file.filename}` });
 };
 

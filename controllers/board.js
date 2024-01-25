@@ -12,7 +12,9 @@ exports.getPosts = async (req, res) => {
       },
       order: [['createdAt', 'DESC']],
       where:
-        req.query.search ? { title: { [Op.like]: `%${req.query.search}%` } } : req.params.id ? { userId: req.params.id } : {},
+        req.query.search
+          ? { title: { [Op.like]: `%${req.query.search}%` } }
+          : req.params.id ? { userId: req.params.id } : {},
     });
     if (!boardList) {
       return res.json({

@@ -9,7 +9,13 @@ exports.join = async (req, res, next) => {
   try {
     const exUser = await User.findOne({ where: { email } });
     if (exUser) {
-      return res.redirect('/join?error=exist');
+      // return res.status(404).json(
+      //   {
+      //     code: 500,
+      //     message: '이미 가입된 회원입니다.'
+      //   }
+      // );
+      throw new Error('이미 가입된 회원입니다.')
     }
     const hash = await bcrypt.hash(password, 12);
     await User.create({
@@ -20,7 +26,10 @@ exports.join = async (req, res, next) => {
     return res.send('회원가입에 성공하였습니다.');
   } catch (error) {
     console.error(error);
-    return next(error);
+    return res.status(500).json({
+      code: 500,
+      message: error.message,
+    });
   }
 }
 
