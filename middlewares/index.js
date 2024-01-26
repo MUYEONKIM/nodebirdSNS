@@ -6,22 +6,47 @@ exports.isLoggedIn = (req, res, next) => {
   if (req.isAuthenticated()) {
     next();
   } else {
-    res.status(403).send('로그인 필요');
+    res.status(403).json({
+      code: 403,
+      message: '로그인이 필요합니다'
+    });
   }
 };
 
-// exports.isNotLoggedIn = (req, res, next) => {
-//   if (!req.isAuthenticated()) { // 패스포트 통해서 로그인 했니?
-//     next();
-//   } else {
-//     const message = encodeURIComponent('로그인한 상태입니다.');
-//     res.redirect(`/?error=${message}`);
-//   }
-// };
+exports.isNotLoggedIn = (req, res, next) => {
+  if (!req.isAuthenticated()) { // 패스포트 통해서 로그인 했니?
+    next();
+  } else {
+    const message = encodeURIComponent('로그인한 상태입니다.');
+    res.redirect(`/?error=${message}`);
+  }
+};
+
+exports.updatePost = async (req, res) => {
+  try {
+    Post.update({
+      title: req.body.title,
+      content: req.body.content,
+      img: req.body.img,
+    }, {
+      where: { id: req.params.contentId }
+    });
+    return res.json({
+      code: 200,
+      message: '수정 완료'
+    })
+  } catch (error) {
+    console.error(err);
+    return res.status(500).json({
+      code: 500,
+      message: '서버 에러',
+    });
+  }
+}
 
 exports.verifyToken = (req, res, next) => { // 토큰 검사
   try {
-    // console.log(req.headers.authorization)
+    console.log(req.headers.authorization, "토큰없냐?")
     res.locals.decoded = jwt.verify(req.headers.authorization, process.env.JWT_SECRET);
     return next();
   } catch (error) {
@@ -40,7 +65,7 @@ exports.verifyToken = (req, res, next) => { // 토큰 검사
 
 exports.apiLimiter = rateLimit({
   windowMs: 60 * 1000, // 1분
-  max: 100,
+  max: 10,
   handler(req, res) {
     res.status(this.statusCode).json({
       code: this.statusCode, // 기본값 429

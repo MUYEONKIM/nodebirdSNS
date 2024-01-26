@@ -13,7 +13,11 @@ exports.uploadPost = async (req, res, next) => {
       img: req.body.img,
       UserId: req.user.id,
     });
-    res.send('성공');
+    console.log(post.id)
+    res.status(200).json({
+      code: 200,
+      id: post.id
+    });
   } catch (error) {
     console.error(error);
     next(error);
@@ -22,7 +26,7 @@ exports.uploadPost = async (req, res, next) => {
 
 exports.createComment = async (req, res, next) => {
   try {
-    const post = await Comment.create({
+    await Comment.create({
       comment: req.body.comment,
       PostId: req.body.PostId,
       UserId: req.user.id,
@@ -36,11 +40,21 @@ exports.createComment = async (req, res, next) => {
 
 exports.updateComment = async (req, res) => {
   try {
-    Comment.update({
+    const result = await Comment.update({
       comment: req.body.comment,
     }, {
-      where: { id: req.params.commentId }
+      where: {
+        id: req.params.commentId,
+        UserId: req.user.id,
+      }
     });
+    console.log(result, "수정됬냐?")
+    if (result[0] === 0) {
+      return res.status(403).json({
+        code: 403,
+        message: "권한이 없습니다"
+      })
+    }
     return res.json({
       code: 200,
       message: '수정 완료'
@@ -56,9 +70,21 @@ exports.updateComment = async (req, res) => {
 
 exports.deleteComment = async (req, res) => {
   try {
-    Comment.destroy({
-      where: { id: req.params.commentId }
+    const result = await Comment.destroy({
+      where: {
+        id: req.params.commentId,
+        UserId: req.user.id,
+      }
     }); // force : true로 주면 softdelete여도 강제삭제 가능
+    console.log(result, "삭제됬냐??")
+
+    if (result === 0) {
+      return res.status(403).json({
+        code: 403,
+        message: "권한이 없습니다"
+      })
+    }
+
     return res.json({
       code: 200,
       message: '삭제 완료'

@@ -1,24 +1,23 @@
 const express = require('express');
 
-const { verifyToken, apiLimiter } = require('../middlewares');
+const { verifyToken, apiLimiter, isLoggedIn } = require('../middlewares');
 const { updatePost, getPosts, getPost, deletePost } = require('../controllers/board');
 
 const router = express.Router();
 
-// GET /board/posts/my
-// router.get('/posts/my', verifyToken, getMyPosts);
+// GET /board/posts/:id
 router.get('/posts/:id', getPosts);
-// router.get('/posts/my', apiLimiter, verifyToken, getMyPosts);
 
 // GET /board/posts/
 router.get('/posts', getPosts);
-// router.get('/posts/:title', apiLimiter, verifyToken, getPostsBySearch);
 
+// GET /board/posts/:contentId
 router.get('/post/:contentId', getPost)
 
-router.patch('/post/:contentId', updatePost)
+// PATCH /board/posts/:contentId
+router.patch('/post/:contentId', verifyToken, apiLimiter, isLoggedIn, updatePost)
 
-router.delete('/post/:contentId', deletePost)
-
+// DELETE /board/posts/:contentId
+router.delete('/post/:contentId', verifyToken, apiLimiter, isLoggedIn, deletePost)
 
 module.exports = router;

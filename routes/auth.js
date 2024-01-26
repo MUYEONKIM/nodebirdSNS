@@ -1,5 +1,6 @@
 const express = require('express');
 const passport = require('passport');
+const jwt = require('jsonwebtoken');
 
 const { join, login, logout } = require('../controllers/auth');
 
@@ -19,15 +20,18 @@ router.get('/kakao', passport.authenticate('kakao'));
 
 // GET /auth/kakao/callback
 router.get('/kakao/callback', passport.authenticate('kakao', {
-  failureRedirect: '/?error=카카오로그인 실패',
+  failureRedirect: 'http://localhost:3000',
 }), (req, res) => {
-
-  res.json({
-    code: 200,
-    message: '카카오 로그인에 성공하였습니다.',
-    user: req.user
+  const token = jwt.sign({
+    id: req.user.id,
+    nick: req.user.nick
+  }, process.env.JWT_SECRET, {
+    expiresIn: '30m',
+    issuer: 'nodebird',
   })
-  // res.redirect(`http://localhost:3000/`); // 성공 시에는 /로 이동
+  const query = "?token=" + token;
+
+  res.redirect(`http://localhost:3000/kakao/query:${query}`); // 성공 시에는 /로 이동
 });
 
 module.exports = router;

@@ -1,7 +1,6 @@
 const bcrypt = require('bcrypt');
 const passport = require('passport');
 const User = require('../models/user');
-const { createToken } = require('./board');
 const jwt = require('jsonwebtoken');
 
 exports.join = async (req, res, next) => {
@@ -9,12 +8,6 @@ exports.join = async (req, res, next) => {
   try {
     const exUser = await User.findOne({ where: { email } });
     if (exUser) {
-      // return res.status(404).json(
-      //   {
-      //     code: 500,
-      //     message: '이미 가입된 회원입니다.'
-      //   }
-      // );
       throw new Error('이미 가입된 회원입니다.')
     }
     const hash = await bcrypt.hash(password, 12);

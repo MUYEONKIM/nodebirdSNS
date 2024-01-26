@@ -1,4 +1,3 @@
-const jwt = require('jsonwebtoken');
 const sequelize = require('sequelize')
 const { User, Post, Comment } = require('../models');
 const Op = sequelize.Op;
@@ -64,9 +63,10 @@ exports.getPost = async (req, res) => {
       // 배열에 댓글들 담겨있게 됨
       include: {
         model: Comment,
-        attributes: ['comment', 'UserId', 'id'],
+        attributes: ['comment', 'UserId', 'id', 'createdAt'],
       },
       where: { id: req.params.contentId },
+      order: [[Comment, 'createdAt', 'DESC']]
     });
     if (!post) {
       return res.json({
@@ -89,13 +89,22 @@ exports.getPost = async (req, res) => {
 
 exports.updatePost = async (req, res) => {
   try {
-    Post.update({
+    const result = await Post.update({
       title: req.body.title,
       content: req.body.content,
       img: req.body.img,
     }, {
-      where: { id: req.params.contentId }
+      where: {
+        id: req.params.contentId,
+        UserId: req.user.id
+      }
     });
+    if (result[0] === 0) {
+      return res.status(403).json({
+        code: 403,
+        message: "권한이 없습니다"
+      })
+    }
     return res.json({
       code: 200,
       message: '수정 완료'
@@ -111,15 +120,23 @@ exports.updatePost = async (req, res) => {
 
 exports.deletePost = async (req, res) => {
   try {
-    Post.destroy({
-      where: { id: req.params.contentId }
+    const result = await Post.destroy({
+      where: {
+        id: req.params.contentId,
+        UserId: req.user.id
+      }
     }); // force : true로 주면 softdelete여도 강제삭제 가능
+    if (result === 0) {
+      return res.status(403).json({
+        code: 403,
+        message: "권한이 없습니다"
+      })
+    }
     return res.json({
       code: 200,
       message: '삭제 완료'
     })
   } catch (error) {
-    console.error(err);
     return res.status(500).json({
       code: 500,
       message: '서버 에러',

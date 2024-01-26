@@ -4,12 +4,10 @@ const cookieParser = require('cookie-parser');
 const passport = require('passport');
 const morgan = require('morgan');
 const session = require('express-session');
-const nunjucks = require('nunjucks');
 const dotenv = require('dotenv');
 const cors = require('cors')
 dotenv.config();
 const board = require('./routes/board');
-const pagerouter = require('./routes/page')
 const postRouter = require('./routes/post');
 const authRouter = require('./routes/auth');
 const userRouter = require('./routes/user')
@@ -18,11 +16,7 @@ const passportConfig = require('./passport');
 
 const app = express();
 app.set('port', process.env.PORT || 8001);
-app.set('view engine', 'html');
-nunjucks.configure('views', {
-  express: app,
-  watch: true,
-});
+
 sequelize.sync({ force: false })
   .then(() => {
     console.log('데이터베이스 연결 성공');
@@ -55,7 +49,6 @@ app.use(session({
 }));
 app.use(passport.initialize()); // req.user, req.login, .req.isAuth... 등 생김
 app.use(passport.session());
-app.use('/', pagerouter);
 app.use('/board', board);
 app.use('/auth', authRouter);
 app.use('/post', postRouter);

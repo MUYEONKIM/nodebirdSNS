@@ -4,7 +4,7 @@ const path = require('path');
 const fs = require('fs');
 
 const { afterUploadImage, uploadPost, createComment, updateComment, deleteComment } = require('../controllers/post');
-const { verifyToken, isLoggedIn } = require('../middlewares');
+const { verifyToken, isLoggedIn, apiLimiter } = require('../middlewares');
 
 const router = express.Router();
 
@@ -30,23 +30,18 @@ const upload = multer({
 });
 
 // POST /post/img
-router.post('/img', isLoggedIn, upload.single('img'), afterUploadImage);
-// router.post('/img', verifyToken, upload.single('img'), afterUploadImage);
-// router.post('/img');
+router.post('/img', isLoggedIn, verifyToken, apiLimiter, upload.single('img'), afterUploadImage);
 
 // POST /post
-const upload2 = multer();
 router.post('/', uploadPost);
-// router.post('/', verifyToken, upload2.none(), uploadPost);
 
-router.get('/test', isLoggedIn, (req, res) => {
-  res.send("qqq")
-})
+// POST /post/comment
+router.post('/comment', isLoggedIn, apiLimiter, createComment);
 
-router.post('/comment', isLoggedIn, createComment);
+// PATCH /post/comment/:commentId
+router.patch('/comment/:commentId', isLoggedIn, apiLimiter, updateComment);
 
-router.patch('/comment/:commentId', isLoggedIn, updateComment);
-
+// DELETE /post/comment/:commentId
 router.delete('/comment/:commentId', isLoggedIn, deleteComment);
 
 module.exports = router;
