@@ -69,7 +69,7 @@ exports.apiLimiter = rateLimit({
   handler(req, res) {
     res.status(this.statusCode).json({
       code: this.statusCode, // 기본값 429
-      message: '1분에 열 번만 요청할 수 있습니다.',
+      message: '잠시 후 다시 시도해주세요.',
     });
   },
 });
